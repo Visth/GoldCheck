@@ -3,13 +3,13 @@
 ## Screenshots
 
 <p align="center">
-    <img src="./src/assets/README_images/readme_img_01.jpg" width="25%" height="400px"></img>
+    <img src="./src/assets/README_images/readme_img_01.jpg" width="30%" height="400px"></img>
     <br/>
-    <img src="./src/assets/README_images/readme_img_02.jpg" width="25%" height="400px"></img>
+    <img src="./src/assets/README_images/readme_img_02.jpg" width="30%" height="400px"></img>
     <br/>
-    <img src="./src/assets/README_images/readme_img_03.jpg" width="25%" height="400px"></img>
+    <img src="./src/assets/README_images/readme_img_03.jpg" width="30%" height="400px"></img>
     <br/>
-    <img src="./src/assets/README_images/readme_img_04.jpg" width="25%" height="400px"></img>
+    <img src="./src/assets/README_images/readme_img_04.jpg" width="30%" height="400px"></img>
 </p>
 
 <hr/>
