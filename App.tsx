@@ -15,7 +15,7 @@ const App = () => (
 	<MetalPricesProvider>
 		<ThemeProvider>
 			<NavigationContainer>
-				<Stack.Navigator initialRouteName='GoldCheck Menu'>
+				<Stack.Navigator initialRouteName='GoldCheck Menu' screenOptions={{ headerShown: false }}>
 					<Stack.Screen name='GoldCheck Menu' component={Home} />
 					<Stack.Screen
 						name='Dzisiejsza cena złota'

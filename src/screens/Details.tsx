@@ -1,13 +1,13 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome"; // Import ikony
-import { useTheme } from "../context/theme-context"; // Import hooka
+import Icon from "react-native-vector-icons/FontAwesome";
+import { LinearGradient } from "expo-linear-gradient";
+import { useTheme } from "../context/theme-context";
 
 export const Details = ({ route }: any) => {
 	const { metalName } = route.params;
-	const { theme } = useTheme(); // Pobranie aktualnego motywu
+	const { theme } = useTheme();
 
-	// Mapowanie opisów i zastosowań dla metali
 	const metalDetails: any = {
 		Platyna: {
 			description:
@@ -118,59 +118,79 @@ export const Details = ({ route }: any) => {
 		},
 	};
 
-	// Dynamiczne style zależne od motywu
 	const dynamicStyles = styles(theme);
 
 	return (
-		<View style={dynamicStyles.container}>
-			<Text style={dynamicStyles.text}>{metalName}</Text>
-			{/* Wyświetlenie opisu metalu */}
-			<Text style={dynamicStyles.description}>
-				{metalDetails[metalName]?.description ||
-					"Brak opisu dla tego metalu."}
-			</Text>
+		<LinearGradient
+			colors={
+				theme === "dark"
+					? ["#121212", "#4d586a"]
+					: ["#eed3a3", "#efefef"]
+			}
+			style={dynamicStyles.gradientBackground}
+		>
+			<View style={dynamicStyles.container}>
+				<View style={dynamicStyles.nameContainer}>
+					<Text style={dynamicStyles.text}>{metalName}</Text>
+				</View>
 
-			{/* Wyświetlenie listy zastosowań */}
-			<Text style={dynamicStyles.usesTitle}>
-				Najczęstsze wykorzystanie:
-			</Text>
-			{metalDetails[metalName]?.uses?.map(
-				(use: string, index: number) => (
-					<View key={index} style={dynamicStyles.useItem}>
-						<Icon
-							name='circle'
-							size={10}
-							color={theme === "dark" ? "#BBBBBB" : "#555555"}
-						/>
-						<Text style={dynamicStyles.useText}>{use}</Text>
-					</View>
-				)
-			)}
-		</View>
+				<Text style={dynamicStyles.description}>
+					{metalDetails[metalName]?.description ||
+						"Brak opisu dla tego metalu."}
+				</Text>
+
+				<Text style={dynamicStyles.usesTitle}>Najczęstsze zastosowania:</Text>
+				{metalDetails[metalName]?.uses?.map(
+					(use: string, index: number) => (
+						<View key={index} style={dynamicStyles.useItem}>
+							<Icon
+								name='circle'
+								size={8}
+								color={theme === "dark" ? "#BBBBBB" : "#555555"}
+							/>
+							<Text style={dynamicStyles.useText}>{use}</Text>
+						</View>
+					)
+				)}
+			</View>
+		</LinearGradient>
 	);
 };
 
-// Funkcja generująca style dynamiczne
 const styles = (theme: "light" | "dark") =>
 	StyleSheet.create({
+		gradientBackground: {
+			flex: 1,
+		},
 		container: {
 			flex: 1,
 			justifyContent: "center",
 			alignItems: "center",
-			backgroundColor: theme === "dark" ? "#121212" : "#FFFFFF",
-			paddingHorizontal: 10,
+			paddingHorizontal: 20,
+		},
+		nameContainer: {
+			backgroundColor: theme === "dark" ? "#252525" : "#dcdcdc",
+			paddingVertical: 15,
+			paddingHorizontal: 25,
+			borderRadius: 15,
+			marginBottom: 20,
+			shadowColor: "#000",
+			shadowOpacity: 0.2,
+			shadowRadius: 5,
+			elevation: 5,
 		},
 		text: {
-			fontSize: 24,
+			fontSize: 32,
 			fontWeight: "bold",
 			color: theme === "dark" ? "#E0E0E0" : "#333333",
-			marginBottom: 10,
+			textAlign: "center",
 		},
 		description: {
 			fontSize: 18,
 			color: theme === "dark" ? "#BBBBBB" : "#555555",
 			textAlign: "center",
 			marginBottom: 20,
+			paddingHorizontal: 10,
 		},
 		usesTitle: {
 			fontSize: 20,
@@ -182,15 +202,15 @@ const styles = (theme: "light" | "dark") =>
 		useItem: {
 			flexDirection: "row",
 			alignItems: "center",
-			marginBottom: 10,
-			marginLeft: 20, // Dodanie większego marginesu z lewej strony
-			alignSelf: "flex-start", // Wyrównanie do lewej krawędzi
+			marginBottom: 8,
+			marginLeft: 20,
+			alignSelf: "flex-start",
 		},
 		useText: {
 			fontSize: 16,
 			color: theme === "dark" ? "#CCCCCC" : "#444444",
 			marginLeft: 10,
 			marginRight: 10,
-			flexShrink: 1, // Zapobiega wykraczaniu poza ekran
+			flexShrink: 1,
 		},
 	});

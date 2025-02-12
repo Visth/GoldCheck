@@ -1,12 +1,13 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Image, Dimensions } from "react-native";
 import { useTheme } from "../context/theme-context";
+import { LinearGradient } from "expo-linear-gradient";
 
 export const Investment = () => {
   const { theme } = useTheme();
   const dynamicStyles = styles(theme);
+  const screenWidth = Dimensions.get("window").width;
 
-  // Lista książek o inwestowaniu w złoto
   const books = [
     {
       title: "The New Case for Gold",
@@ -27,7 +28,6 @@ export const Investment = () => {
     },
   ];
 
-  // Lista sławnych osób inwestujących w złoto
   const famousInvestors = [
     {
       name: "Elon Musk",
@@ -50,62 +50,73 @@ export const Investment = () => {
   ];
 
   return (
-    <ScrollView style={dynamicStyles.container}>
-      {/* Sekcja 1: Jak zacząć inwestować w złoto */}
-      <Text style={dynamicStyles.header}>Jak zacząć inwestować w złoto?</Text>
-      <Text style={dynamicStyles.text}>
-        Złoto od wieków jest uznawane za bezpieczną przystań w czasach kryzysu. Aby skutecznie
-        inwestować w złoto, warto zacząć od edukacji na temat rynku surowców. Rozważ różne formy
-        inwestycji: fizyczne złoto w postaci sztabek czy monet, fundusze ETF powiązane z ceną złota
-        oraz akcje firm wydobywających ten cenny metal. Kluczem do sukcesu jest dywersyfikacja
-        portfela oraz długoterminowa perspektywa inwestycyjna.
-      </Text>
+    <LinearGradient
+      colors={theme === "dark" ? ["#121212", "#4d586a"] : ["#eed3a3", "#efefef"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={dynamicStyles.gradientBackground}
+    >
+      <ScrollView contentContainerStyle={dynamicStyles.container}>
+        <Text style={dynamicStyles.header}>Jak zacząć inwestować w złoto?</Text>
+        <Text style={dynamicStyles.text}>
+          Złoto od wieków jest uznawane za bezpieczną przystań w czasach kryzysu. Aby skutecznie
+          inwestować w złoto, warto zacząć od edukacji na temat rynku surowców. Rozważ różne formy
+          inwestycji: fizyczne złoto w postaci sztabek czy monet, fundusze ETF powiązane z ceną złota
+          oraz akcje firm wydobywających ten cenny metal. Kluczem do sukcesu jest dywersyfikacja
+          portfela oraz długoterminowa perspektywa inwestycyjna.
+        </Text>
 
-      {/* Sekcja 2: Popularne książki */}
-      <Text style={dynamicStyles.subHeader}>Popularne książki o inwestowaniu w złoto:</Text>
-      {books.map((book, index) => (
-  <View
-    key={index}
-    style={[
-      dynamicStyles.card,
-      index === books.length - 1 && { marginBottom: 40 },
-    ]}
-  >
-    <Text style={dynamicStyles.bold}>{book.title}</Text>
-    <Text style={dynamicStyles.labelBold}>
-      Autor: <Text style={dynamicStyles.cardText}>{book.author}</Text>
-    </Text>
-    <Text style={dynamicStyles.cardText}>{book.description}</Text>
-  </View>
-))}
+        <Image
+						source={require("../assets/img/invest-1.jpg")}
+						style={[
+							dynamicStyles.image,
+							{ width: screenWidth * 1, marginVertical: 0 },
+						]}
+						resizeMode='cover'
+					/>
 
-      {/* Sekcja 3: Sławne osoby */}
-      <Text style={dynamicStyles.subHeader}>Sławne osoby które inwestują w złoto:</Text>
-      {famousInvestors.map((investor, index) => (
-  <View
-    key={index}
-    style={[
-      dynamicStyles.card,
-      index === famousInvestors.length - 1 && { marginBottom: 40 },
-    ]}
-  >
-    <Text style={dynamicStyles.bold}>{investor.name}</Text>
-    <Text style={dynamicStyles.labelBold}>
-      Kapitał: <Text style={dynamicStyles.cardText}>{investor.capital}</Text>
-    </Text>
-    <Text style={dynamicStyles.cardText}>{investor.description}</Text>
-  </View>
-))}
-    </ScrollView>
+        <Text style={dynamicStyles.subHeader}>Popularne książki o inwestowaniu w złoto:</Text>
+        {books.map((book, index) => (
+          <View
+            key={index}
+            style={[dynamicStyles.card, index === books.length - 1 && { marginBottom: 40 }]}
+          >
+            <Text style={dynamicStyles.bold}>{book.title}</Text>
+            <Text style={dynamicStyles.labelBold}>
+              Autor: <Text style={dynamicStyles.cardText}>{book.author}</Text>
+            </Text>
+            <Text style={dynamicStyles.cardText}>{book.description}</Text>
+          </View>
+        ))}
+
+        <Text style={dynamicStyles.subHeader}>Sławne osoby które inwestują w złoto:</Text>
+        {famousInvestors.map((investor, index) => (
+          <View
+            key={index}
+            style={[dynamicStyles.card, index === famousInvestors.length - 1 && { marginBottom: 40 }]}
+          >
+            <Text style={dynamicStyles.bold}>{investor.name}</Text>
+            <Text style={dynamicStyles.labelBold}>
+              Kapitał: <Text style={dynamicStyles.cardText}>{investor.capital}</Text>
+            </Text>
+            <Text style={dynamicStyles.cardText}>{investor.description}</Text>
+          </View>
+        ))}
+      </ScrollView>
+    </LinearGradient>
   );
 };
 
 const styles = (theme: "light" | "dark") =>
   StyleSheet.create({
-    container: {
+    gradientBackground: {
       flex: 1,
+    },
+    container: {
+      flexGrow: 1,
+      justifyContent: "center",
+      alignItems: "center",
       padding: 16,
-      backgroundColor: theme === "dark" ? "#121212" : "#FFFFFF",
     },
     header: {
       fontSize: 32,
@@ -125,9 +136,10 @@ const styles = (theme: "light" | "dark") =>
       fontSize: 16,
       color: theme === "dark" ? "#E0E0E0" : "#333333",
       lineHeight: 24,
-      marginBottom: 10,
+      marginBottom: 16,
     },
     card: {
+      width: "100%",
       backgroundColor: theme === "dark" ? "#1E1E1E" : "#F9F9F9",
       borderColor: "#B8860B",
       borderWidth: 2,
@@ -141,15 +153,21 @@ const styles = (theme: "light" | "dark") =>
       lineHeight: 22,
     },
     labelBold: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: theme === "dark" ? "#E0E0E0" : "#333333",
-        lineHeight: 22,
-      },
+      fontSize: 16,
+      fontWeight: "bold",
+      color: theme === "dark" ? "#E0E0E0" : "#333333",
+      lineHeight: 22,
+    },
     bold: {
       fontSize: 18,
       fontWeight: "bold",
       color: "#B8860B",
       marginBottom: 5,
     },
+    image: {
+			height: 250,
+			alignSelf: "center",
+			marginVertical: 15,
+		},
   });
+

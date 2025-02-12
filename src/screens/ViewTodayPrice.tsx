@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
 	View,
 	Text,
@@ -6,17 +6,21 @@ import {
 	StyleSheet,
 	TouchableOpacity,
 	ScrollView,
+	Image,
+	Dimensions
 } from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome"; // Import ikony
-import { useTheme } from "../context/theme-context"; // Importujemy kontekst motywu
+import Icon from "react-native-vector-icons/FontAwesome";
+import { useTheme } from "../context/theme-context";
 import { useMetalPrices } from "../context/metalPrices-context";
+import { LinearGradient } from "expo-linear-gradient";
 
 export const ViewTodayPrice = () => {
 	const [showDetails, setShowDetails] = useState<boolean>(false);
 	const { goldPrice, loading, error } = useMetalPrices();
+	const screenWidth = Dimensions.get("window").width;
 
-	const { theme } = useTheme(); // Pobranie aktualnego motywu
-	const dynamicStyles = styles(theme); // Generowanie stylów dynamicznych
+	const { theme } = useTheme();
+	const dynamicStyles = styles(theme);
 
 	if (loading) {
 		return (
@@ -35,198 +39,182 @@ export const ViewTodayPrice = () => {
 		);
 	}
 
-	// const fetchGoldPrice = async () => {
-	//  try {
-	//    const response = await fetch(
-	//      "https://api.metalpriceapi.com/v1/latest?api_key=17757a4673af4f81676a1bff1c5ab514&base=USD&currencies=XAU"
-	//    );
-
-	//    if (!response.ok) {
-	//      throw new Error(`HTTP error! status: ${response.status}`);
-	//    }
-
-	//    const data = await response.json();
-
-	//    console.log("API Response:", data); // Logujemy odpowiedź do debugowania
-
-	//    // Pobieramy poprawną cenę złota w USD
-	//    const goldPriceUSD = data.rates?.USDXAU;
-
-	//    if (goldPriceUSD) {
-	//      setGoldPrice(goldPriceUSD); // Ustaw aktualną cenę złota
-	//    } else {
-	//      setError("Unable to fetch correct gold price from API.");
-	//    }
-	//  } catch (err) {
-	//    console.error("Fetch Error:", err);
-	//    setError("Failed to fetch data. Please try again later.");
-	//  } finally {
-	//    setLoading(false);
-	//  }
-	// };
-
-	// // Hook useEffect, aby pobrać dane po załadowaniu komponentu
-	// useEffect(() => {
-	//  fetchGoldPrice();
-	// }, []);
-
-	// // Renderowanie widoku
-	// if (loading) {
-	//  return (
-	//    <View style={dynamicStyles.container}>
-	//      <ActivityIndicator size="large" color="#4CAF50" />
-	//      <Text style={dynamicStyles.loadingText}>Loading current gold price...</Text>
-	//    </View>
-	//  );
-	// }
-
-	// if (error) {
-	//  return (
-	//    <View style={dynamicStyles.container}>
-	//      <Text style={dynamicStyles.errorText}>{error}</Text>
-	//    </View>
-	//  );
-	// }
-
 	return (
-		<View style={dynamicStyles.container}>
-			<ScrollView showsVerticalScrollIndicator={false}>
-				<Text style={dynamicStyles.text}>
-					Dzisiejsza cena złota za uncję:{" "}
-					<Text style={{ color: "#B8860B", fontSize: 26 }}>
-						{goldPrice !== null && goldPrice !== undefined
-							? `$${goldPrice.toFixed(2)}`
-							: "N/A"}
-					</Text>
-				</Text>
-
-				<TouchableOpacity
-					onPress={() => setShowDetails(!showDetails)}
-					style={dynamicStyles.button}>
-					<Text style={dynamicStyles.buttonText}>
-						{showDetails ? "Ukryj informacje" : "Więcej o złocie"}
-					</Text>
-				</TouchableOpacity>
-
-				{showDetails && (
-					<View style={dynamicStyles.detailsContainer}>
-						<Text style={dynamicStyles.detailsText}>
-							Złoto to jeden z najstarszych i najbardziej
-							cenionych surowców na świecie. Jego unikalne
-							właściwości, takie jak odporność na korozję i
-							połysk, sprawiają, że od tysięcy lat jest używane
-							jako środek płatniczy, ozdoba i symbol bogactwa. Już
-							w starożytnym Egipcie złoto było kojarzone z
-							boskością i nieśmiertelnością. W czasach
-							współczesnych złoto jest uznawane za bezpieczną
-							przystań inwestycyjną, szczególnie w okresach
-							kryzysów gospodarczych. Jego wartość rosła wraz z
-							rosnącym popytem, a obecnie jest kluczowym elementem
-							wielu gałęzi przemysłu i finansów.
+		<LinearGradient
+			colors={
+				theme === "dark"
+					? ["#121212", "#4d586a"]
+					: ["#eed3a3", "#efefef"]
+			}
+			start={{ x: 0, y: 0 }}
+			end={{ x: 1, y: 1 }}
+			style={dynamicStyles.gradientBackground}>
+			<View style={dynamicStyles.container}>
+				<ScrollView showsVerticalScrollIndicator={false}>
+					<Text style={dynamicStyles.text}>
+						Dzisiejsza cena złota za uncję:{" "}
+						<Text style={{ color: "#B8860B", fontSize: 26 }}>
+							{goldPrice !== null && goldPrice !== undefined
+								? `${goldPrice.toFixed(2)} $`
+								: "N/A"}
 						</Text>
-						<Text style={dynamicStyles.usesTitle}>
-							Najczęstsze wykorzystanie:
+					</Text>
+
+					<TouchableOpacity
+						onPress={() => setShowDetails(!showDetails)}
+						style={dynamicStyles.button}>
+						<Text style={dynamicStyles.buttonText}>
+							{showDetails
+								? "Ukryj informacje"
+								: "Więcej o złocie"}
 						</Text>
-						<View style={dynamicStyles.usesList}>
-							<View style={dynamicStyles.useItem}>
-								<Icon
-									name='circle'
-									size={10}
-									color={
-										theme === "dark" ? "#BBBBBB" : "#555555"
-									}
-								/>
-								<Text style={dynamicStyles.useText}>
-									Produkcja biżuterii i ozdób
-								</Text>
-							</View>
-							<View style={dynamicStyles.useItem}>
-								<Icon
-									name='circle'
-									size={10}
-									color={
-										theme === "dark" ? "#BBBBBB" : "#555555"
-									}
-								/>
-								<Text style={dynamicStyles.useText}>
-									Bezpieczna lokata kapitału
-								</Text>
-							</View>
-							<View style={dynamicStyles.useItem}>
-								<Icon
-									name='circle'
-									size={10}
-									color={
-										theme === "dark" ? "#BBBBBB" : "#555555"
-									}
-								/>
-								<Text style={dynamicStyles.useText}>
-									Przemysł elektroniczny – przewodniki
-								</Text>
-							</View>
-							<View style={dynamicStyles.useItem}>
-								<Icon
-									name='circle'
-									size={10}
-									color={
-										theme === "dark" ? "#BBBBBB" : "#555555"
-									}
-								/>
-								<Text style={dynamicStyles.useText}>
-									Produkcja monet i sztabek inwestycyjnych
-								</Text>
-							</View>
-							<View style={dynamicStyles.useItem}>
-								<Icon
-									name='circle'
-									size={10}
-									color={
-										theme === "dark" ? "#BBBBBB" : "#555555"
-									}
-								/>
-								<Text style={dynamicStyles.useText}>
-									Stomatologia – wypełnienia i korony
-								</Text>
-							</View>
-							<View style={dynamicStyles.useItem}>
-								<Icon
-									name='circle'
-									size={10}
-									color={
-										theme === "dark" ? "#BBBBBB" : "#555555"
-									}
-								/>
-								<Text style={dynamicStyles.useText}>
-									Technologia kosmiczna
-								</Text>
-							</View>
-							<View style={dynamicStyles.useItem}>
-								<Icon
-									name='circle'
-									size={10}
-									color={
-										theme === "dark" ? "#BBBBBB" : "#555555"
-									}
-								/>
-								<Text style={dynamicStyles.useText}>
-									Przemysł medyczny – leczenie nowotworów
-								</Text>
+					</TouchableOpacity>
+
+					{showDetails && (
+						<View style={dynamicStyles.detailsContainer}>
+							<Text style={dynamicStyles.detailsText}>
+								Złoto to jeden z najstarszych i najbardziej
+								cenionych surowców na świecie. Jego unikalne
+								właściwości, takie jak odporność na korozję i
+								połysk, sprawiają, że od tysięcy lat jest
+								używane jako środek płatniczy, ozdoba i symbol
+								bogactwa. Już w starożytnym Egipcie złoto było
+								kojarzone z boskością i nieśmiertelnością. W
+								czasach współczesnych złoto jest uznawane za
+								bezpieczną przystań inwestycyjną, szczególnie w
+								okresach kryzysów gospodarczych. Jego wartość
+								rosła wraz z rosnącym popytem, a obecnie jest
+								kluczowym elementem wielu gałęzi przemysłu i
+								finansów.
+							</Text>
+							<Text style={dynamicStyles.usesTitle}>
+								Najczęstsze wykorzystanie:
+							</Text>
+							<View style={dynamicStyles.usesList}>
+								<View style={dynamicStyles.useItem}>
+									<Icon
+										name='circle'
+										size={10}
+										color={
+											theme === "dark"
+												? "#BBBBBB"
+												: "#555555"
+										}
+									/>
+									<Text style={dynamicStyles.useText}>
+										Produkcja biżuterii i ozdób
+									</Text>
+								</View>
+								<View style={dynamicStyles.useItem}>
+									<Icon
+										name='circle'
+										size={10}
+										color={
+											theme === "dark"
+												? "#BBBBBB"
+												: "#555555"
+										}
+									/>
+									<Text style={dynamicStyles.useText}>
+										Bezpieczna lokata kapitału
+									</Text>
+								</View>
+								<View style={dynamicStyles.useItem}>
+									<Icon
+										name='circle'
+										size={10}
+										color={
+											theme === "dark"
+												? "#BBBBBB"
+												: "#555555"
+										}
+									/>
+									<Text style={dynamicStyles.useText}>
+										Przemysł elektroniczny – przewodniki
+									</Text>
+								</View>
+								<View style={dynamicStyles.useItem}>
+									<Icon
+										name='circle'
+										size={10}
+										color={
+											theme === "dark"
+												? "#BBBBBB"
+												: "#555555"
+										}
+									/>
+									<Text style={dynamicStyles.useText}>
+										Produkcja monet i sztabek inwestycyjnych
+									</Text>
+								</View>
+								<View style={dynamicStyles.useItem}>
+									<Icon
+										name='circle'
+										size={10}
+										color={
+											theme === "dark"
+												? "#BBBBBB"
+												: "#555555"
+										}
+									/>
+									<Text style={dynamicStyles.useText}>
+										Stomatologia – wypełnienia i korony
+									</Text>
+								</View>
+								<View style={dynamicStyles.useItem}>
+									<Icon
+										name='circle'
+										size={10}
+										color={
+											theme === "dark"
+												? "#BBBBBB"
+												: "#555555"
+										}
+									/>
+									<Text style={dynamicStyles.useText}>
+										Technologia kosmiczna
+									</Text>
+								</View>
+								<View style={dynamicStyles.useItem}>
+									<Icon
+										name='circle'
+										size={10}
+										color={
+											theme === "dark"
+												? "#BBBBBB"
+												: "#555555"
+										}
+									/>
+									<Text style={dynamicStyles.useText}>
+										Przemysł medyczny – leczenie nowotworów
+									</Text>
+								</View>
 							</View>
 						</View>
-					</View>
-				)}
-			</ScrollView>
-		</View>
+					)}
+					<Image
+						source={require("../assets/img/today-1.jpg")}
+						style={[
+							dynamicStyles.image,
+							{ width: screenWidth * 0.9},
+						]}
+						resizeMode='cover'
+					/>
+				</ScrollView>
+			</View>
+		</LinearGradient>
 	);
 };
 
 const styles = (theme: "light" | "dark") =>
 	StyleSheet.create({
+		gradientBackground: {
+			flex: 1,
+		},
 		container: {
 			flex: 1,
 			justifyContent: "center",
 			alignItems: "center",
-			backgroundColor: theme === "dark" ? "#121212" : "#FFFFFF",
 			padding: 16,
 		},
 		text: {
@@ -235,8 +223,8 @@ const styles = (theme: "light" | "dark") =>
 			fontWeight: "bold",
 			color: theme === "dark" ? "#E0E0E0" : "#333333",
 			textAlign: "center",
-			paddingHorizontal: 80,
-			paddingVertical: 12,
+			paddingHorizontal: 50,
+			paddingVertical: 20,
 			borderWidth: 2,
 			borderColor: theme === "dark" ? "#B8860B" : "#B8860B",
 			borderRadius: 8,
@@ -258,10 +246,11 @@ const styles = (theme: "light" | "dark") =>
 			marginTop: 20,
 			marginBottom: 40,
 			padding: 10,
-			backgroundColor: theme === "dark" ? "#1E1E1E" : "#F5F5F5",
+			backgroundColor: theme === "dark" ? "#3b3e43" : "#F5F5F5",
 			borderRadius: 8,
 			borderWidth: 1,
 			borderColor: theme === "dark" ? "#B8860B" : "#B8860B",
+			width: "100%",
 		},
 		detailsText: {
 			fontSize: 16,
@@ -287,5 +276,11 @@ const styles = (theme: "light" | "dark") =>
 			fontSize: 16,
 			color: theme === "dark" ? "#CCCCCC" : "#444444",
 			marginLeft: 10,
+		},
+		image: {
+			height: 380,
+			alignSelf: "center",
+			marginVertical: 15,
+			borderRadius: 10,
 		},
 	});

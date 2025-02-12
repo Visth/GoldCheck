@@ -1,18 +1,15 @@
 import React, { createContext, useState, useContext } from "react";
 
-// Typy dla motywu
 type Theme = "light" | "dark";
 
-// Kontekst tematyczny
 const ThemeContext = createContext<{
   theme: Theme;
   toggleTheme: () => void;
 }>({
-  theme: "dark", // Domyślny motyw
-  toggleTheme: () => {}, // Domyślna funkcja (placeholder)
+  theme: "dark",
+  toggleTheme: () => {},
 });
 
-// Provider dla motywu
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [theme, setTheme] = useState<Theme>("dark");
 
@@ -27,5 +24,4 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-// Hook do używania motywu
 export const useTheme = () => useContext(ThemeContext);

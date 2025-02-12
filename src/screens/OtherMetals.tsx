@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,13 +6,15 @@ import {
   ScrollView,
   TouchableOpacity,
   Animated,
+  TextInput,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "../context/theme-context";
 
 export const OtherMetals = ({ navigation }: any) => {
-  const { theme } = useTheme(); // Pobieramy aktualny motyw z ThemeContext
+  const { theme } = useTheme();
 
-  const metals = [
+  const allMetals = [
     { name: "Platyna", price: "$1,050" },
     { name: "Srebro", price: "$25" },
     { name: "Rod", price: "$14,500" },
@@ -26,87 +28,117 @@ export const OtherMetals = ({ navigation }: any) => {
     { name: "Neodym", price: "$500" },
   ];
 
-  // Animowane wartości dla każdego elementu
-  const animations = useRef(metals.map(() => new Animated.Value(0))).current;
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredMetals, setFilteredMetals] = useState(allMetals);
 
-  // Uruchomienie animacji przy renderowaniu
+  useEffect(() => {
+    setFilteredMetals(
+      allMetals.filter((metal) =>
+        metal.name.toLowerCase().startsWith(searchQuery.toLowerCase())
+      )
+    );
+  }, [searchQuery]);
+
+  const animations = useRef(allMetals.map(() => new Animated.Value(0))).current;
+
   useEffect(() => {
     Animated.stagger(
-      100, // Odstęp czasowy między animacjami kolejnych elementów
+      100,
       animations.map((anim) =>
         Animated.timing(anim, {
           toValue: 1,
-          duration: 500, // Czas trwania animacji dla jednego elementu
-          useNativeDriver: true, // Używanie natywnego sterownika dla lepszej wydajności
+          duration: 500,
+          useNativeDriver: true,
         })
       )
     ).start();
   }, [animations]);
 
-  // Style dynamicznie dostosowujące się do motywu
   const dynamicStyles = styles(theme);
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={dynamicStyles.container}>
-      <Text style={dynamicStyles.header}>Ceny Metali</Text>
-      <Text style={dynamicStyles.smallText}>
-        Kliknij na metal aby wyświetlić szczegóły
-      </Text>
-      <View style={dynamicStyles.table}>
-        <View style={dynamicStyles.row}>
-          <Text style={[dynamicStyles.cell, dynamicStyles.headerCell]}>
-            Nazwa metalu
-          </Text>
-          <Text style={[dynamicStyles.cell, dynamicStyles.headerCell]}>
-            Cena za uncję
-          </Text>
-        </View>
-        {metals.map((metal, index) => {
-          const translateY = animations[index].interpolate({
-            inputRange: [0, 1],
-            outputRange: [20, 0], // Element pojawia się z przesunięciem
-          });
-          const opacity = animations[index];
+    <LinearGradient
+      colors={
+        theme === "dark" ? ["#121212", "#4d586a"] : ["#eed3a3", "#efefef"]
+      }
+      style={dynamicStyles.gradientBackground}
+    >
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={dynamicStyles.container}
+      >
+        <Text style={dynamicStyles.header}>Ceny Metali</Text>
+        <Text style={dynamicStyles.smallText}>
+          Kliknij na metal, aby wyświetlić szczegóły
+        </Text>
 
-          return (
-            <Animated.View
-              key={index}
-              style={{
-                transform: [{ translateY }],
-                opacity,
-              }}
-            >
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("Szczegóły metalu", { metalName: metal.name })
-                }
+        <TextInput
+          style={dynamicStyles.searchInput}
+          placeholder="Wyszukaj metal po nazwie..."
+          placeholderTextColor={theme === "dark" ? "#bbb" : "#555"}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+
+        <View style={dynamicStyles.table}>
+          <View style={dynamicStyles.row}>
+            <Text style={[dynamicStyles.cell, dynamicStyles.headerCell]}>
+              Nazwa metalu
+            </Text>
+            <Text style={[dynamicStyles.cell, dynamicStyles.headerCell]}>
+              Cena za uncję
+            </Text>
+          </View>
+          {filteredMetals.map((metal, index) => {
+            const translateY = animations[index].interpolate({
+              inputRange: [0, 1],
+              outputRange: [20, 0],
+            });
+            const opacity = animations[index];
+
+            return (
+              <Animated.View
+                key={index}
+                style={{
+                  transform: [{ translateY }],
+                  opacity,
+                }}
               >
-                <View
-                  style={[
-                    dynamicStyles.row,
-                    index % 2 === 0
-                      ? dynamicStyles.evenRow
-                      : dynamicStyles.oddRow,
-                  ]}
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("Szczegóły metalu", {
+                      metalName: metal.name,
+                    })
+                  }
                 >
-                  <Text style={dynamicStyles.cell}>{metal.name}</Text>
-                  <Text style={dynamicStyles.cell}>{metal.price}</Text>
-                </View>
-              </TouchableOpacity>
-            </Animated.View>
-          );
-        })}
-      </View>
-    </ScrollView>
+                  <View
+                    style={[
+                      dynamicStyles.row,
+                      index % 2 === 0
+                        ? dynamicStyles.evenRow
+                        : dynamicStyles.oddRow,
+                    ]}
+                  >
+                    <Text style={dynamicStyles.cell}>{metal.name}</Text>
+                    <Text style={dynamicStyles.cell}>{metal.price}</Text>
+                  </View>
+                </TouchableOpacity>
+              </Animated.View>
+            );
+          })}
+        </View>
+      </ScrollView>
+    </LinearGradient>
   );
 };
 
-// Funkcja generująca style dynamicznie w zależności od motywu
 const styles = (theme: "light" | "dark") =>
   StyleSheet.create({
+    gradientBackground: {
+      flex: 1,
+    },
     container: {
       flexGrow: 1,
-      backgroundColor: theme === "dark" ? "#121212" : "#FFFFFF",
       padding: 20,
       alignItems: "center",
     },
@@ -120,6 +152,16 @@ const styles = (theme: "light" | "dark") =>
       fontSize: 14,
       fontWeight: "bold",
       color: theme === "dark" ? "#E0E0E0" : "#555555",
+      marginBottom: 20,
+    },
+    searchInput: {
+      width: "100%",
+      padding: 10,
+      borderRadius: 8,
+      backgroundColor: theme === "dark" ? "#1e1e1e" : "#fff",
+      color: theme === "dark" ? "#fff" : "#000",
+      borderWidth: 1,
+      borderColor: theme === "dark" ? "#333" : "#ccc",
       marginBottom: 20,
     },
     table: {
@@ -154,3 +196,4 @@ const styles = (theme: "light" | "dark") =>
       backgroundColor: theme === "dark" ? "#2C2C2C" : "#EAEAEA",
     },
   });
+
